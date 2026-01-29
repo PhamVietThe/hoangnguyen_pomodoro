@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoàng Nguyên's Study space✨✨✨</title>
+    <style>
+        :root {
+            --bg: #fff0f3;
+            --primary: #ff85a1;
+            --secondary: #a2d2ff;
+            --text: #4a4e69;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 35px;
+            box-shadow: 0 15px 35px rgba(255, 133, 161, 0.2);
+            border: 2px solid #ffdae0;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 { margin-bottom: 0.5rem; font-size: 1.4rem; color: #ff4d6d; }
+
+        #timer {
+            font-size: 5.5rem;
+            font-weight: 800;
+            margin: 15px 0;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .heartbeat {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); text-shadow: 0 0 15px rgba(255, 133, 161, 0.5); }
+            100% { transform: scale(1); }
+        }
+
+        .controls button {
+            background: var(--primary);
+            border: none;
+            padding: 12px 30px;
+            margin: 8px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .controls button:hover {
+            background: #ff4d6d;
+            transform: scale(1.05);
+        }
+
+        #message {
+            margin-top: 25px;
+            font-style: italic;
+            min-height: 40px;
+            color: #757bc8;
+            line-height: 1.4;
+        }
+
+        .mode-tags { margin-bottom: 20px; }
+        .mode-tags span {
+            font-size: 0.85rem;
+            padding: 6px 18px;
+            border-radius: 20px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            display: inline-block;
+        }
+        .active-mode { background: var(--secondary) !important; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="greeting">Nhí nhô, hôm nay học thật chăm chỉ nhé baeeee! 🌸</h1>
+    <div class="mode-tags">
+        <span id="work-tag" class="active-mode">Tập trung</span>
+        <span id="break-tag">Nghỉ xả hơi</span>
+    </div>
+    
+    <div id="timer">25:00</div>
+
+    <div class="controls">
+        <button onclick="toggleTimer()" id="startBtn">Bắt đầu</button>
+        <button onclick="resetTimer()" style="background: #ccc;">Đặt lại</button>
+    </div>
+
+    <p id="message">"Anh tin là em sẽ làm được!"</p>
+</div>
+
+<script>
+    let timeLeft = 25 * 60;
+    let timerId = null;
+    let isWorkMode = true;
+
+    const messages = [
+        "Em đang làm rất tốt, cố lên nhé! ✨",
+        "Nhớ uống nước và chớp mắt thường xuyên nha.",
+        "Em là người chăm chỉ nhất mà anh biết đấy.",
+        "Nghỉ tay một chút nếu thấy mệt nhé, anh vẫn ở đây.",
+        "Sắp xong rồi, chút nữa thôi là hoàn thành rồi!",
+        "Thành quả ngọt ngào đang chờ em phía trước đó. 🍯"
+    ];
+
+    function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = 
+            `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function toggleTimer() {
+        const btn = document.getElementById('startBtn');
+        const timerText = document.getElementById('timer');
+        
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+            btn.textContent = 'Tiếp tục';
+            timerText.classList.remove('heartbeat');
+        } else {
+            timerText.classList.add('heartbeat');
+            btn.textContent = 'Tạm dừng';
+            timerId = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    switchMode();
+                }
+            }, 1000);
+        }
+    }
+
+    function switchMode() {
+        isWorkMode = !isWorkMode;
+        timeLeft = isWorkMode ? 25 * 60 : 5 * 60;
+        
+        document.getElementById('work-tag').classList.toggle('active-mode');
+        document.getElementById('break-tag').classList.toggle('active-mode');
+        
+        if(isWorkMode) {
+            document.getElementById('greeting').textContent = "Vào việc thôi nào, chiến binh! 💪";
+            document.getElementById('startBtn').textContent = "Bắt đầu";
+        } else {
+            document.getElementById('greeting').textContent = "Giỏi lắm! Nghỉ ngơi tí cho đỡ mệt nào 🧸";
+            document.getElementById('startBtn').textContent = "Nghỉ thôi";
+        }
+        
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        document.getElementById('message').textContent = randomMsg;
+        
+        updateDisplay();
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        timeLeft = 25 * 60;
+        isWorkMode = true;
+        document.getElementById('startBtn').textContent = 'Bắt đầu';
+        document.getElementById('timer').classList.remove('heartbeat');
+        document.getElementById('greeting').textContent = "Hôm nay làm việc thật tốt nhé! 🌸";
+        updateDisplay();
+    }
+</script>
+
+</body>
+</html>
